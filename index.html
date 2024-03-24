@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css">
+    <script type ="module" src = "./index.js"></script>
+    <title>Document</title>
+</head>
+<body>
+
+    <div id = "pages">
+        <hamburger-icon class = "hamburger-icon" onclick="window.showMenu()">
+            <img src = "./images/hamburger.svg">
+        </hamburger-icon>
+
+        <header class = "logo-banner">
+            <img src = "./images/Logo.svg">
+            <div>
+                <div>FRENCH FRIPE</div>
+                <div>IMPORTED WHOLESALE VINTAGE CLOTHING</div>
+            </div>
+        </header>
+        <div selected name = "home">
+            <img class = "full" src = "./images/instagram/2.jpg">
+
+            
+            <div class = "category">
+                <h1 class = "no-margin-bottom centred">Eureka Group</h1>
+                <h2>Since 1974</h2>
+                <div class = "row-spread"><h2>(Eureka)</h2><h2>(World)</h2><h2>(Recycling)</h2></div>
+            </div>
+
+            <div  class = "category">
+                <h1>Imports From Over 10 Different Countries</h1>
+                <div category = "products"></div>
+            </div>
+        </div>
+    
+        <div name = "contact">
+            <h1 class = "title">Contact Us</h1>
+            <div class = "form">
+                <div><label>Name</label> <input name = "name"></div>
+                <div><label>Email</label> <input name = "email"></div>
+                <div><label>
+                    <svg style = "width: 1em" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M164.9 24.6c-7.7-18.6-28-28.5-47.4-23.2l-88 24C12.1 30.2 0 46 0 64C0 311.4 200.6 512 448 512c18 0 33.8-12.1 38.6-29.5l24-88c5.3-19.4-4.6-39.7-23.2-47.4l-96-40c-16.3-6.8-35.2-2.1-46.3 11.6L304.7 368C234.3 334.7 177.3 277.7 144 207.3L193.3 167c13.7-11.2 18.4-30 11.6-46.3l-40-96z"/></svg>
+                    </label> <input name = "number"></div>
+                <section><label>Message</label><div class = "text-lined"><textarea name = "message"  id="" cols="30" min-rows = "5" rows="5"></textarea></div></section>
+                <div class = "clickable send" onclick = "sendMessage()"><div>Send</div></div>
+            </div>
+        </div>
+    
+        <div name = "about">
+            <h1 class = "title">About Us</h1>
+            <div class = "column">
+                <div>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Culpa, veritatis? Quae quam eum ratione, impedit ea eius numquam illum reprehenderit quis est minus omnis, ipsam sequi odit qui placeat possimus.</div>
+                <img class = "full" src = "images/instagram/4.jpg">
+                <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Similique, quis. Totam nobis voluptates unde similique atque dolorem? Qui, mollitia, rerum animi adipisci quo sapiente magni eveniet ad architecto dolorem sed.</div>
+            </div>
+        </div>
+
+        <footer>
+            <div>
+                <div>-</div>
+                <div class = "clickable" onclick = "selectPage('home')">Home</div>
+                <div>-</div>
+                <div class = "clickable" onclick = "selectPage('contact')">Contact Us</div>
+                <div>-</div>
+                <div class = "clickable" onclick = "selectPage('about')">About </div>
+            </div>
+            <div>-</div>
+            
+            <div>
+                <div>Address:</div> 
+                <div>23-27 Smith St, Marrickville NSW 2204</div>
+            </div>
+            <div>
+                <div>Hours:</div>
+                <div> Moday - Friday 8:30 am - 4:30 pm</div>
+            </div>
+            
+           <div>
+                <div>Email:</div>
+                <div> accountsreceiveable@frenchfripe.com</div>
+            </div>
+
+            <div>
+                <div>Phone: </div>
+                <div>(02) 9565 1951</div>
+            </div>
+        </footer>
+
+    </div>
+    <div class="hamburger-menu">
+        <h1  class = "clickable" onclick = "selectPage('home')">Home</h1>
+        <h1  class = "clickable" onclick = "selectPage('about')">About Us</h1>
+        <h1  class = "clickable" onclick = "selectPage('contact')">Contact Us</h1>
+    </div>
+
+    <popup-info>
+        <div>Some message</div>
+        <div class = "clickable" onclick = "hidePopup()">Close</div>
+    </popup-info>
+    
+</body>
+</html>

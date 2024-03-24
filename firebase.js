@@ -1,0 +1,487 @@
+const firebaseConfig = {
+    apiKey: "AIzaSyAoZwZNIX-K0HH9qOyVgrHCH5bHWfkRtBw",
+    authDomain: "frenchfripefirebase-b10da.firebaseapp.com",
+    projectId: "frenchfripefirebase-b10da",
+    storageBucket: "frenchfripefirebase-b10da.appspot.com",
+    messagingSenderId: "771961415159",
+    appId: "1:771961415159:web:30d6912b7dd3d87f0a3af2",
+    measurementId: "G-E8BF70J5WS"
+  };
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js'
+import { signOut, getAuth, signInWithRedirect, GoogleAuthProvider, FacebookAuthProvider, onAuthStateChanged, sendEmailVerification as _sendEmailVerification, EmailAuthProvider, reauthenticateWithCredential, updatePassword, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js'
+import { getDatabase, child, push, ref as _ref, get, onValue, onChildAdded, onChildChanged, onChildRemoved, set, update, off } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js'
+import { getStorage, ref as sref, uploadBytesResumable, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js'
+import { getFunctions, httpsCallable  } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js'
+
+let initialised = false;
+let App = null;
+let Auth = null;
+let Functions = null;
+
+
+
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ PUBLIC FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+/*  Initialize firebase, initializes the firebase app with the given configuration
+    after initializing wait for an auth state change and return */
+export async function initialise(config = firebaseConfig) {
+    if (initialised) return;
+    initialised = true;
+    App = initializeApp(config);
+    Functions = getFunctions(App, "asia-southeast1");
+
+}
+
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SIGNIN/OUT FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+class LoginError extends Error {
+    constructor(error) {
+        let inputName = "";
+        let errorCode = error;
+        if (error.code) errorCode = error.code;
+        // Display the error message
+        let message = "";
+        switch (errorCode) {
+            case "auth/invalid-credential":
+            case "auth/invalid-login-credentials":
+                inputName = "email";
+                message = "wrong email and/or password";
+                break;
+
+            case "auth/email-already-in-use":
+            case "auth/email-already-exists":
+                inputName = "email";
+                message = "An account with this email already exists";
+
+                break;
+
+            case "auth/user-not-found":
+                inputName = "email";
+                message = "email not found";
+                break;
+
+            case "auth/invalid-email":
+                message = "wrong email";
+                inputName = "email";
+                break;
+
+            case "auth/wrong-password":
+                message = "wrong password";
+                inputName = "password";
+                break;
+
+            case "auth/too-many-requests": 
+                message = "To many attempts";
+                inputName = "password";
+
+            // TODO: Check other errors
+            default:
+                message = errorCode;
+                break;
+
+        }
+        super(message);
+        this.inputName = inputName;
+    }
+}
+
+
+export async function signin(type, info) {
+    switch (type) {
+        case "email":
+            let { email, password } = info;
+            try {
+                await signInWithEmailAndPassword(Auth, email, password);
+            } catch (error) {
+                throw new LoginError(error);
+            }
+            break;
+
+        case "gmail":
+            const gprovider = new GoogleAuthProvider();
+            signInWithRedirect(Auth, gprovider);
+            break;
+
+        case "facebook": 
+            const fprovider = new FacebookAuthProvider();
+            fprovider.addScope("email");
+            fprovider.addScope("public_profile");
+            signInWithRedirect(Auth, fprovider);
+            break;
+
+        case "facebook":
+            throw new LoginError("Facebook has not yet been setup.");
+    }
+}
+
+export async function sendEmailVerification(){
+    // Send email verification
+    if (User) {
+        const actionCodeSettings = {
+            url: window.location.origin,
+            handleCodeInApp: true
+        };
+        await _sendEmailVerification(User, actionCodeSettings);
+    }
+}
+
+export async function sendForgotPasswordEmail(email){
+    await sendPasswordResetEmail(Auth, email, {
+        url: window.location.origin,
+        handleCodeInApp: true
+    })
+}
+
+export async function signup(type, info) {
+    switch (type) {
+        case "email":
+            let { email, password } = info;
+            delete info.password;
+            try {
+                // Register user
+                await createUserWithEmailAndPassword(Auth, email, password);
+
+                // Set user info
+                setUserInfo(info);
+
+                // 
+                await sendEmailVerification();
+
+                signout();
+            } catch (error) {
+                throw new LoginError(error);
+            }
+            break;
+
+        case "gmail":
+            const provider = new GoogleAuthProvider();
+            signInWithRedirect(Auth, provider);
+            break;
+
+        case "facebook":
+            throw new LoginError("Facebook has not yet been setup.");
+    }
+}
+
+export function signout() { signOut(Auth) }
+
+
+async function resetPassword(data) {
+    let credentials = EmailAuthProvider.credential(User.email, data.oldpasscode)
+    await reauthenticateWithCredential(User, credentials)
+    await updatePassword(User, data.newpasscode)
+}
+
+
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SESSION FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Make session creates a new session signaling channel in the database
+   returns the new session key */
+export async function createSession(info) {
+    
+    const make = httpsCallable(Functions, 'createSession');
+    let {data} = await make(info);
+
+    return parseSession(data);
+}
+
+export async function deleteSession(sid) {
+    const del = httpsCallable(Functions, 'deleteSession');
+    await del({sid});
+}
+
+export async function editSession(info){
+    const edit = httpsCallable(Functions, 'editSession');
+    let {data} = await edit(info);
+    console.log("edit", data);
+
+    return parseSession(data);
+}
+
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DATA ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+let DataListeners = []
+let OldData = null
+export function addDataListener(obj) {
+    if (obj instanceof Function) {
+        DataListeners.push(obj);
+        if (OldData) {
+            obj(parseData(OldData));
+        }
+    }
+}
+
+
+function updateDataListeners(sc) {
+    OldData = sc;
+
+    let value = parseData(sc);
+    if (value.admin != null) {
+        watchAdmin(value.admin);
+    }
+
+    for (let listener of DataListeners) {
+        listener(parseData(sc))
+    }
+}
+
+let FirebaseDataListeners = []
+async function watchData() {
+    stopWatch()
+    if (Database && User != null) {
+        let userInfoRef = getUserRef()
+        let us = httpsCallable(Functions, "updateSessions")
+        await us();
+        // await get(userInfoRef)
+        onValue(userInfoRef, (value) => {
+            updateDataListeners(value)
+        })
+    }
+}
+function stopWatch() {
+    for (let listener of FirebaseDataListeners) {
+        listener()
+    }
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ADMIN ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+let AdminListeners = []
+let OldAdmin = null
+export function addAdminListener(obj) {
+    if (obj instanceof Function) {
+        AdminListeners.push(obj);
+        if (OldAdmin) {
+            obj(OldAdmin);
+        }
+    }
+}
+
+
+function updateAdminListeners(sc) {
+    OldAdmin = sc
+    for (let listener of AdminListeners) {
+        listener(sc)
+    }
+}
+
+let FirebaseAdminListeners = []
+async function watchAdmin(name) {
+    stopAdminWatch()
+    if (Database && User != null) {
+        let adminRef = ref(`companies/${name}`)
+        onValue(adminRef, (value) => {
+            updateAdminListeners(value.val())
+        })
+    }
+}
+function stopAdminWatch() {
+    for (let listener of FirebaseAdminListeners) {
+        listener()
+    }
+}
+
+export async function updateAdminUsers(info){
+    const update = httpsCallable(Functions, 'updateAdminUsers');
+    let data = await update(info);
+    console.log("update", data);
+
+    return data
+}
+
+export async function removeAdminUser(email){
+    const remove = httpsCallable(Functions, 'removeAdminUser');
+    let data = await remove({email});
+    console.log("remove", data);
+
+    return data
+}
+
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DATA PARSER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+const TIER_USAGE_PER_MONTH = {
+    default: {
+        minutes: 0,
+        sessions: 0,
+        storage: 0,
+    },
+    Standard: {
+        minutes: 4*2*60,
+        sessions: 20,
+        storage: 300,
+    }
+}
+export function parseSession(session) {
+    let ds = new Date(session.time);
+    ds.setMinutes(ds.getMinutes() + ds.getTimezoneOffset());
+    if ((new Date()).getTime() > ds.getTime() + session.duration * 60 * 1000) {
+        session.status = "complete"
+    }
+    session.date = `${ds.getDate()}/${ds.getMonth()+1}/${ds.getFullYear()} ${ds.toLocaleTimeString("en", {timeStyle: "short"})}`
+    session.link = `${window.location.origin}/Session/?${session.sid}`
+    return session;
+}
+function round(x, y) {return Math.round(Math.pow(10, y) * x) / Math.pow(10, y)}
+let LastInfo = null;
+const DATA_PARSERS = [
+    {
+        name: "info",
+        parse: (info) => {
+            if (info == null) {
+                info = {
+                    firstName: "",
+                    lastName: "",
+                    displayName: User.displayName,
+                    email: User.email,
+                }
+                setUserInfo(info);
+            }
+            if (!info.email)
+                info.email = User.email
+
+            if (!info.displayName || info.displayName == '')
+                info.displayName = info.firstName + ' ' + info.lastName
+
+            if (!info.displayPhoto) info.displayPhoto = User.photoURL
+
+            if (!info.optionalData) info.optionalData = false;
+
+            if (typeof info.displayPhoto != 'string')
+                info.displayPhoto = "./images/defaultdp.svg"
+            LastInfo = info;
+            return info;
+        },
+    },
+    {
+        name: "sessions",
+        parse: (sessions) => {
+            let nSessions = [];
+            if (typeof sessions == "object" && sessions != null) {
+                for (let key in sessions) {
+                    let session = sessions[key];
+                    nSessions.push(parseSession(session));
+                }
+            }
+            return nSessions;
+        }
+    },
+    {
+        name: "licence",
+        parse: (licence) => {
+            if (licence == null) {
+                licence = {
+                    tier: "None"
+                };
+            }
+            return licence;
+        }
+    },
+    {
+        name: "admin",
+        parse: (value) => {
+
+            return value;
+        }
+    },
+    {
+        name: "usage",
+        parse: (usage, data) => {
+            if (usage == null) usage = {};
+
+            let pusage = {
+                minutes: {used: 0},
+                sessions: {used: 0},
+                storage: {used: 0},
+                hours: {used: 0}
+            };
+            let tier = data.licence.tier;
+            let maxUsage = TIER_USAGE_PER_MONTH[tier];
+
+            for (let key in maxUsage) {
+                let used = round(key in usage ? usage[key] : 0, 1);
+                let max = maxUsage[key];
+                pusage[key].max = max;
+                pusage[key].used = used;
+                pusage[key]['%'] = (max == 0) ? 0 :  round(used / max, 2);
+                pusage[key].remaining = max - used;
+            }
+
+            for (let key of ["max", "used", "remaining", "%"]) pusage.hours[key] = key == '%' ? pusage.minutes[key] : round(pusage.minutes[key]/60, 2);
+
+            return pusage;
+        }
+    }
+]
+export function parseData(sc) {
+    let data = sc.val()
+    if (data == null) {
+        data = {};
+    }
+
+    for (let dp of DATA_PARSERS) {
+        let value = dp.name in data ? data[dp.name] : null;
+        data[dp.name] = dp.parse(value, data);
+    }
+
+    return data
+}
+
+
+
+
+export async function sendSupportMessage(message, progress) {
+    let r = push(ref("messages"))
+    let key = r.key
+    if (message.attachment instanceof File) {
+        message.attachment = await uploadFileToCloud(message.attachment, `messages/${key}`, (uts) => {
+            console.log(uts)
+            if (progress instanceof Function)
+                progress(uts.bytesTransferred / uts.totalBytes)
+        })
+    } else if ('attachment' in message) {
+        delete message.attachment
+    }
+    console.log(message)
+    await set(r, message)
+}
+
+async function updateDisplayPhoto(file, callback) {
+    let url = await uploadFileToCloud(file, `users/${User.uid}/displayPhoto`)
+    setUserInfo({ displayPhoto: url })
+}
+
+// Upload file to firebase storage bucket
+async function uploadFileToCloud(file, path, statusCallback) {
+    let Storage = getStorage(App, storageURL);
+
+    // path = `${path}`
+    console.log("uploading file of size", (file.size / 1e6) + "MB");
+
+    if (!(file instanceof File) || typeof path !== 'string') {
+        console.log('invalid file');
+        return null;
+    }
+
+    if (!(statusCallback instanceof Function))
+        statusCallback = () => { }
+
+    let sr = sref(Storage, path);
+
+    let uploadTask = uploadBytesResumable(sr, file);
+    console.log(uploadTask);
+    uploadTask.on('next', statusCallback)
+    await uploadTask;
+
+    let url = await getDownloadURL(sr);
+    return url;
+}
+
+export function getUserInfo(){
+    return LastInfo;
+}
+
+export { child, get, push, set, onChildAdded, onValue, resetPassword, updateDisplayPhoto }
+
+
