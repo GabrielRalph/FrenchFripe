@@ -3,11 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        window.onload = () => {document.body.toggleAttribute("loaded", true)}
+    </script>
     <link rel="stylesheet" href="./style.css">
     <script type ="module" src = "./index.js"></script>
     <title>Document</title>
 </head>
 <body>
+    <style>
+        body[loaded] #splash{
+            animation-name: hide;
+            animation-duration: 1s;
+            animation-iteration-count: 1;
+            animation-timing-function: cubic-bezier(0.364, 0, 0.636, 1);
+            z-index: -1;
+            opacity: 0;
+        }
+        #splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white; z-index: 1000;
+        }
+        #splash svg {
+            position: fixed; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%);
+            animation-name: pulse;
+            animation-duration: 3s;
+            animation-iteration-count: infinite;
+            animation-timing-function: cubic-bezier(0.364, 0, 0.636, 1);
+        }
+        @keyframes hide {
+            0% {z-index: 1000; opacity: 1;}
+            99% {z-index: 1000; opacity: 0.01;}
+            100% {z-index: -1; opacity: 0;}
+        }
+        @keyframes pulse {
+            0% {transform: translate(-50%, -50%);}
+            50% {transform: translate(-50%, -50%) scale(1.1);}
+            100% {transform: translate(-50%, -50%);}
+        }
+        .cls-1, .cls-2, .cls-3 {
+            stroke-width: 0px;
+        }
+
+        .cls-2 {
+            fill: #1e4a9a;
+        }
+        .cls-3 {
+            fill: #e9262e;
+        }
+    </style>
+    <div id = "splash">
+        <svg viewBox="0 0 485.24 280.14">
+            <g>
+                <rect class="cls-2" x="101.17" width="58.47" height="181.7"/>
+                <g>
+                <rect class="cls-3" x="172.68" width="58.47" height="49.97"/>
+                <rect class="cls-3" x="172.68" y="63.01" width="58.47" height="49.97"/>
+                </g>
+                <g>
+                <rect class="cls-3" x="315.7" width="58.47" height="49.97"/>
+                <rect class="cls-3" x="315.7" y="63.01" width="58.47" height="49.97"/>
+                </g>
+                <rect class="cls-2" x="244.19" width="58.47" height="181.7"/>
+            </g>
+            <g>
+                <path class="cls-1" d="m8.38,279.37H0v-45.18h26.69v7.68H8.38v11.39h16.96v7.55H8.38v18.56Z"/>
+                <path class="cls-1" d="m48.06,279.37h-8.38v-45.18h11.07c4.69,0,8.13.26,10.3.77,3.16.73,5.52,2.05,7.1,3.97,1.58,1.92,2.37,4.5,2.37,7.74,0,5.59-2.82,9.51-8.45,11.78,1.66.73,3.21,2.15,4.64,4.29,1.43,2.13,4.32,7.68,8.67,16.64h-9.28c-3.16-6.44-5.37-10.75-6.62-12.93-1.26-2.18-2.44-3.63-3.55-4.35-.34-.26-.89-.46-1.63-.61-.75-.15-1.5-.22-2.27-.22h-3.97v18.11Zm0-25.02h5.06c1.92,0,3.43-.19,4.54-.58,2.82-1.07,4.22-3.16,4.22-6.27,0-1.15-.24-2.19-.7-3.1-.47-.92-1.17-1.61-2.11-2.08-.94-.47-1.9-.77-2.88-.9-1.07-.17-2.9-.26-5.5-.26h-2.62v13.18Z"/>
+                <path class="cls-1" d="m114.94,279.37h-28.22v-45.18h27.07v7.68h-18.69v10.5h17.34v7.49h-17.34v11.84h19.84v7.68Z"/>
+                <path class="cls-1" d="m137.41,279.37h-8.06v-45.18h7.68c.38.51.98,1.33,1.79,2.46.81,1.13,3.87,5.39,9.18,12.77,5.31,7.38,8.84,12.42,10.59,15.1-.13-5.21-.19-15.32-.19-30.34h8v45.18h-7.04c-8.96-12.84-14.58-20.92-16.86-24.22-2.28-3.31-4.02-5.88-5.22-7.71.08,2.65.13,13.29.13,31.94Z"/>
+                <path class="cls-1" d="m216.83,276.49c-3.75,2.43-8.55,3.65-14.4,3.65-3.12,0-6.04-.53-8.77-1.6-2.73-1.07-5.11-2.61-7.14-4.64-2.03-2.03-3.61-4.49-4.74-7.39-1.13-2.9-1.7-6.08-1.7-9.54s.56-6.66,1.7-9.6c1.13-2.94,2.73-5.46,4.8-7.55,2.07-2.09,4.49-3.7,7.26-4.83,2.77-1.13,5.72-1.7,8.83-1.7,6.19,0,10.9,1.17,14.14,3.52v8.26c-1.62-1.45-3.54-2.53-5.76-3.23-2.22-.7-4.48-1.06-6.78-1.06-4.65,0-8.4,1.43-11.23,4.29-2.84,2.86-4.26,6.78-4.26,11.78,0,2.56.4,4.84,1.22,6.85.81,2.01,1.94,3.68,3.39,5.02,1.45,1.34,3.14,2.35,5.06,3.01,1.92.66,3.95.99,6.08.99,4.27,0,8.36-1.3,12.29-3.9v7.68Z"/>
+                <path class="cls-1" d="m265.47,279.37h-8.32v-19.39h-18.94v19.39h-8.38v-45.18h8.38v18.05h18.94v-18.05h8.32v45.18Z"/>
+                <path class="cls-1" d="m309.56,279.37h-8.38v-45.18h26.69v7.68h-18.3v11.39h16.96v7.55h-16.96v18.56Z"/>
+                <path class="cls-1" d="m349.25,279.37h-8.38v-45.18h11.07c4.69,0,8.13.26,10.3.77,3.16.73,5.53,2.05,7.1,3.97s2.37,4.5,2.37,7.74c0,5.59-2.82,9.51-8.45,11.78,1.66.73,3.21,2.15,4.64,4.29,1.43,2.13,4.32,7.68,8.67,16.64h-9.28c-3.16-6.44-5.37-10.75-6.62-12.93-1.26-2.18-2.44-3.63-3.55-4.35-.34-.26-.89-.46-1.63-.61-.75-.15-1.5-.22-2.27-.22h-3.97v18.11Zm0-25.02h5.06c1.92,0,3.43-.19,4.54-.58,2.82-1.07,4.22-3.16,4.22-6.27,0-1.15-.24-2.19-.7-3.1-.47-.92-1.17-1.61-2.11-2.08s-1.9-.77-2.88-.9c-1.07-.17-2.9-.26-5.5-.26h-2.62v13.18Z"/>
+                <path class="cls-1" d="m396.28,279.37h-8.38v-45.18h8.38v45.18Z"/>
+                <path class="cls-1" d="m420.92,279.37h-8.38v-45.18h11.52c4.27,0,7.49.26,9.66.77,3.33.73,5.91,2.2,7.74,4.42,1.83,2.22,2.75,5.21,2.75,8.96,0,1.45-.22,3.05-.67,4.8-.45,1.75-1.3,3.36-2.56,4.83-1.26,1.47-2.83,2.61-4.7,3.42-2.94,1.2-6.91,1.79-11.9,1.79h-3.46v16.19Zm0-23.3h3.46c3.03,0,5.4-.32,7.1-.96,1.32-.51,2.32-1.32,3.01-2.43.68-1.11,1.02-2.41,1.02-3.9,0-1.79-.49-3.24-1.47-4.35-.98-1.11-2.37-1.86-4.16-2.24-1.37-.34-3.41-.51-6.14-.51h-2.82v14.4Z"/>
+                <path class="cls-1" d="m485.24,279.37h-28.22v-45.18h27.07v7.68h-18.69v10.5h17.34v7.49h-17.34v11.84h19.84v7.68Z"/>
+            </g>
+        </svg>
+    </div>
 
     <div id = "pages">
         <hamburger-icon class = "hamburger-icon" onclick="window.showMenu()">
@@ -97,8 +177,8 @@
             </div>
 
 
-            <div class = "category" onclick = "window.open('https://vintagemewithstyle.com')">
-                <img class = "full" src="https://vintagemewithstyle.com/images/5efa3f295c232382c559856487ea9b41.png">
+            <div class = "category" style = "text-align:center" onclick = "window.open('https://vintagemewithstyle.com')">
+                <img class = "full" style = "max-width: 400px; transform: translateX(2.7%);" src="https://vintagemewithstyle.com/images/5efa3f295c232382c559856487ea9b41.png">
                 <h2>Find The Stores</h2>
 
             </div>

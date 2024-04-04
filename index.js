@@ -167,7 +167,6 @@ window.addEventListener("hashchange", (e) => {
 
 textAreaAutoResize();
 render();
-console.log("here");
 window.selectPage = selectPage;
 window.hideMenu = hideMenu;
 window.showMenu = showMenu;

@@ -116,6 +116,9 @@ h1 img {
     width: 20%
 }
 
+h1,h2,h3 {
+    letter-spacing: 0.1em;
+}
 h1 {
     width: 100%;
     display: flex;
@@ -171,8 +174,9 @@ h2, h3 {
     font-size: 4vw;
     display: flex;
     margin: 4em 1em;
-    --fs: 2.4em;
+    --fs: 2.2em;
     gap: 1em;
+    letter-spacing: 0.1em;
     position: relative;
 }
 
@@ -200,7 +204,7 @@ contact-icons > * {
 }
 
 .logo-banner > div > div:last-child {
-    font-size: calc(12 * var(--fs) / 37);
+    font-size: calc(10 * var(--fs) / 37);
 }
 
 

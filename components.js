@@ -43,31 +43,52 @@ export class ElementCarousel extends SvgPlus {
 
        
         this.setNextTimeout();
-
-        let lastTouch = null;
-        this.ontouchmove = (e) => {
-            this.acting = true;
-            this.goal = null;
-            let touch = e.touches[0];
-            let dx = 0;
-            if (lastTouch !== null) {
-                dx = touch.clientX - lastTouch.clientX;
-                let dy = touch.clientY - lastTouch.clientY;
-                
-                if (Math.abs(dx/dy) > 2 ) {
-                    clearTimeout(this.nextID);
-                    this.xv = -dx
-                    e.preventDefault();
-                }
-            }
-            lastTouch = touch;
-        }
-
-        this.ontouchend = (e) => {
+        let endAct = () => {
+            mousedown = false;
             lastTouch = null;
             this.acting = false;
             this.setNextTimeout()
         }
+
+        let moveAct = (dx, dy) => {
+            if (Math.abs(dx/dy) > 2 ) {
+                this.acting = true;
+                this.goal = null;
+                clearTimeout(this.nextID);
+                this.xv = -dx;
+                return true;
+            }
+            return false;
+        }
+
+        let mousedown = false;
+        this.addEventListener("mousedown", (e) => {
+            mousedown = true;
+        });
+
+        this.addEventListener("mousemove", (e) => {
+            if (mousedown) {
+                let dx = e.movementX;
+                let dy = e.movementY;
+                if (moveAct(dx, dy)) e.preventDefault();
+            }
+        });
+
+        let lastTouch = null;
+        this.addEventListener("touchmove", (e) => {
+            let touch = e.touches[0];
+            if (lastTouch !== null) {
+                let dx = touch.clientX - lastTouch.clientX;
+                let dy = touch.clientY - lastTouch.clientY;
+                if (moveAct(dx, dy)) e.preventDefault();
+            }
+            lastTouch = touch;
+        });
+
+        
+        this.addEventListener("mouseup", endAct);
+        this.addEventListener("mouseleave", endAct);
+        this.addEventListener("touchend", endAct);
 
         this.updateScroll();
     }
@@ -110,7 +131,6 @@ export class ElementCarousel extends SvgPlus {
         let xpos = [...this.main.children].map(c => this.getElementXPosition(c));
         let mini = -1;
         let sx = this.sx;
-        console.log(this.xv);
         for (let i = 0; i < xpos.length; i++) {
             if (((xpos[i] >= sx && this.xv > 0) || (xpos[i] <= sx && this.xv <= 0)) && mini == -1) mini = i;
             if (((xpos[i] >= sx && this.xv > 0) || (xpos[i] <= sx && this.xv <= 0)) && Math.abs(xpos[i] - sx) < Math.abs(xpos[mini] - sx)) mini = i;
@@ -145,7 +165,6 @@ export class ElementCarousel extends SvgPlus {
             this.sx += vel;
             if (this.sx == 0 || this.sx == this.main.scrollWidth) this.xv = 0;
             if (!this.acting && this.xv < minv && this.goal == null) {
-                console.log(this.sx);
                 this.updateGoal();
             }
             if (this.goal != null) {
