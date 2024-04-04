@@ -3,6 +3,8 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { signInAnonymously, getAuth, signInWithRedirect, GoogleAuthProvider, FacebookAuthProvider, onAuthStateChanged, sendEmailVerification as _sendEmailVerification, EmailAuthProvider, reauthenticateWithCredential, updatePassword, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js'
 import { getFunctions, httpsCallable  } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js'
 
+import { GridIcon } from "./components.js"
+
 const firebaseConfig = {
     apiKey: "AIzaSyAoZwZNIX-K0HH9qOyVgrHCH5bHWfkRtBw",
     authDomain: "frenchfripefirebase-b10da.firebaseapp.com",
@@ -40,6 +42,13 @@ onAuthStateChanged(Auth, async (userData) => {
     }
 });
 
+const isVideoPlaying = video => !!(video.currentTime > 0 && !video.paused && !video.ended && video.readyState > 2);
+window.addEventListener("touchstart", (e) => {
+    for (let video of document.querySelectorAll("video")) {
+       if ( !isVideoPlaying(video)) video.play();
+    }
+})
+
 export function showMenu(){
     main.toggleAttribute("menu", true)
 }
@@ -47,29 +56,13 @@ export function hideMenu(){
     main.toggleAttribute("menu", false)
 }
 
-function toGridIcon(i) {
-    if ("video" in i){
-        return `<div class = "video-box"><video autoplay playsinline muted> <source src="${i.video}" type="video/mp4"> </video> <img src = "./images/blank.svg"  alt = "${i.name}"/></div>`
-    } else {
-        let exstyles = "";
-        if ("size" in i || "position" in i) {
-            exstyles = "; "
-            if ("size" in i) exstyles += `background-size: ${i.size};`
-            if ("position" in i) exstyles += `background-position: ${i.position}`
-        }
-        return `<img src = "./images/blank.svg" style = "background-image: url('${i.img}')${exstyles}" alt = "${i.name}" />`
-    }
-}
 
 function render(data = Data){
     for (let category of data) {
-        let element = document.querySelector(`[category = "${category.name.toLowerCase()}"]`);
+        let element = document.querySelector(`photo-grid[category = "${category.name.toLowerCase()}"]`);
         if (element != null) {
-            element.innerHTML = `
-                <div class = "photo-grid">
-                    ${category.items.map(i => toGridIcon(i)).join("\n")}
-                </div>
-            `
+            console.log(element);
+            element.value = category;
         }
     }
 }
