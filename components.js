@@ -35,6 +35,7 @@ export class ElementCarousel extends SvgPlus {
         this.xv = 0;
         this.goal = null;
         this.selectedi = 0;
+        this.direction = 1;
         let iconbox = this.createChild("div", {class: "icon-box"});
         let j = 0;
         this.icons = [...this.main.children].map(c => {
@@ -107,7 +108,9 @@ export class ElementCarousel extends SvgPlus {
     setNextTimeout(){
         clearTimeout(this.nextID)
         this.nextID = setTimeout(() => {
-            this.goalI += 1;
+            if (this.goalI == this.main.children.length - 1 && this.direction == 1) this.direction = -1;
+            if (this.goalI == 0 && this.direction == -1) this.direction = 1;
+            this.goalI += this.direction;
             this.setNextTimeout();
         }, 4000)
     }
@@ -159,6 +162,9 @@ export class ElementCarousel extends SvgPlus {
             for (let el of this.main.children) {
                 el.style.setProperty("--w", `${this.clientWidth}px`);
             }
+
+            if (this.xv > 0) this.direction = 1;
+            if (this.xv < 0) this.direction = -1;
 
             let vel =this.xv;
             this.xv *= 0.87;
