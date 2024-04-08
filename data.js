@@ -20,8 +20,8 @@ export const Data = [
             },
             {
                 img: "./images/products/trackjacket-brand.jpg",
-                name: "carhartt canvas pants",
-                text: "TRACKJACKET BRAND"
+                name: "TRACK JACKETS branded",
+                text: "TRACK JACKET BRAND"
             },
 
             {
@@ -34,9 +34,9 @@ export const Data = [
                 name: "nletterman jackets",
                 text: "LETTERMAN JACKET"
             },{
-                img: "./images/products/flanel shirt.jpg",
-                name: "flanel shirts",
-                text: "FLANEL SHIRT"
+                img: "./images/products/flanel-shirt.jpg",
+                name: "flannel shirts",
+                text: "FLANNEL SHIRT"
             },
             {
                 img: "./images/products/dresses.jpg",
@@ -45,25 +45,25 @@ export const Data = [
             },
 
             {
-                img: "./images/products/jeans.jpg",
-                name: "Denim Levis Jeans",
-                text: "JEANS"
+                img: "./images/products/denim-skirts.jpg",
+                name: "Denim Skirts",
+                text: "DENIM SKIRTS"
             },
             {
-                img: "./images/products/trackjacket-brand.jpg",
-                name: "carhartt canvas pants",
-                text: "TRACKJACKET BRAND"
+                img: "./images/products/t-shirts.jpg",
+                name: "printed T-Shirts",
+                text: "T-SHIRTS"
             },
 
             {
-                img: "./images/instagram/1.jpg",
+                img: "./images/products/blouse.jpg",
                 name: "vintage check button up shirt",
-                text: "VINTAGE"
+                text: "BLOUSES"
             },
             {
-                img: "./images/instagram/3.jpg",
+                img: "./images/products/workwear.jpg",
                 name: "north face windbreaker jackets",
-                text: "SWEATSHIRT BRAND"
+                text: "WORKWEAR"
             },
         ],
     },

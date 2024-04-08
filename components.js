@@ -42,8 +42,9 @@ export class ElementCarousel extends SvgPlus {
             return iconbox.createChild("span", {content: "●", style: {opacity: j++ == 0 ? 1 : 0.5}})
         })
 
-       
-        this.setNextTimeout();
+        
+        window.addEventListener("load", this.setNextTimeout(20000));
+        
         let endAct = () => {
             mousedown = false;
             lastTouch = null;
@@ -105,14 +106,14 @@ export class ElementCarousel extends SvgPlus {
     }
 
 
-    setNextTimeout(){
+    setNextTimeout(time = 4000){
         clearTimeout(this.nextID)
         this.nextID = setTimeout(() => {
             if (this.goalI == this.main.children.length - 1 && this.direction == 1) this.direction = -1;
             if (this.goalI == 0 && this.direction == -1) this.direction = 1;
             this.goalI += this.direction;
-            this.setNextTimeout();
-        }, 4000)
+            this.setNextTimeout(this.goalI == 0 ? 8000 : 4000);
+        }, time)
     }
 
 
@@ -145,12 +146,14 @@ export class ElementCarousel extends SvgPlus {
     }
 
     set goalI(i) {
-        i = i % this.main.children.length;
-        let goal = this.getElementXPosition(this.main.children[i]);
-        this.selectedi = i;
-        this.goal = goal;
-        let j = 0;
-        for (let icon of this.icons) icon.styles = {opacity: j++ == i ? 1 : 0.5}
+        if (this.offsetParent != null) {
+            i = i % this.main.children.length;
+            let goal = this.getElementXPosition(this.main.children[i]);
+            this.selectedi = i;
+            this.goal = goal;
+            let j = 0;
+            for (let icon of this.icons) icon.styles = {opacity: j++ == i ? 1 : 0.5}
+        }
     }
     get goalI(){return this.selectedi;}
 

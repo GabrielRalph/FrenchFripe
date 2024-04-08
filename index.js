@@ -50,7 +50,7 @@ window.addEventListener("touchstart", (e) => {
 })
 
 export function showMenu(){
-    main.toggleAttribute("menu", true)
+    main.toggleAttribute("menu")
 }
 export function hideMenu(){
     main.toggleAttribute("menu", false)
@@ -123,22 +123,26 @@ const validator = {
     email: (string) => string.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/),
     number: (string) => string.match(/^[\d\s]+$/),
     message: (string) => string.length > 4,
-    name: (string) => string.length > 1
+    name: (string) => string.length > 1,
+    shop: (string) => string.length > 4 && string.length < 15
+
 }
 const errorMessage = {
     name: "Your name must be longer than 2 characters.",
     number: "Your number must contain only numbers and spaces.",
     email: "Your email address is invalid",
-    message: "Your message is to short, please write some more."
+    message: "Your message is to short, please write some more.",
+    shop: "Please select an 'about you' option from the drop down."
 }
 async function sendMessage(){
     const sendEmail = httpsCallable(Functions, 'sendContactEmail');
-    let inputs = document.querySelectorAll("[name = 'contact'] .form input, [name = 'contact'] .form textarea");
+    let inputs = document.querySelectorAll("[name = 'contact'] .form input, [name = 'contact'] .form textarea, [name = 'contact'] .form select");
     let data = {}
     let valid = true;
     for (let input of inputs) {
         let value = input.value;
         let name = input.getAttribute("name");
+        console.log(name, value);
         let isValid = validator[name](value);
         if (!isValid) {
             showPopup(errorMessage[name]);
@@ -147,6 +151,7 @@ async function sendMessage(){
         }
         data[name] = input.value;
     }
+    console.log(data);
     if (valid) {
         for (let input of inputs) input.value = ""
         console.log("sending message :", data);

@@ -12,12 +12,14 @@
 }
 
 :root {
-    font-size: min(4.5vw, 18px);
+    font-size: 4.5vmin;
     font-family: "Halifax W03 Medium";
     --gap: 4vw;
     --wave: cubic-bezier(0.364, 0, 0.636, 1);
     --dark: #1E2938;
     --hb-width: 100vw;
+    --eureka-green: #19572a;
+    --cmode: 1;
 }
 
 body {
@@ -257,7 +259,8 @@ grid-icon .text-banner {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(255, 255, 255, 0.849);
+    background:black;
+    color: white;
     width: 100%;
     text-align: center;
     height: 20%;
@@ -279,6 +282,9 @@ grid-icon .text-banner {
 }
 
 @media only screen and (min-width: 650px) {
+    photo-grid grid-icon {
+        font-size: 0.9em;
+    }
     photo-grid grid-icon:nth-child(3n + 1) {
         grid-column: 1;
     }
@@ -291,12 +297,18 @@ grid-icon .text-banner {
     }
 
     :root {
-        --hb-width: 300px;
+        --hb-width: 65vmin;
     }
 }
 
 
 @media only screen and (min-width: 1000px) {
+    element-carousel {
+        --cmode: 2;
+    }
+    photo-grid grid-icon {
+        font-size: 0.9em;
+    }
     photo-grid grid-icon:nth-child(4n + 1) {
         grid-column: 1;
     }
@@ -326,6 +338,10 @@ element-carousel .icon-box {
     display: flex;
     justify-content: center;
 }
+element-carousel .full {
+    height: calc( ( 100vw - 2 * var(--gap) ) / var(--cmode));
+}
+
 
 .ce {
     display: flex;
@@ -346,7 +362,7 @@ element-carousel .icon-box {
 
 
 .form {
-    font-size: 1.6em;
+    font-size: 1.2em;
     display: flex;
     flex-direction: column;
     gap: calc(2 * var(--gap));
@@ -374,15 +390,19 @@ element-carousel .icon-box {
     text-transform: uppercase;
     display: flex;
     gap: var(--gap);
+    font-weight: bold;
+    white-space: pre;
+    /* opacity: 0.6; */
 }
 
-.form input, .form textarea {
+.form input, .form textarea, .form select{
     font: inherit;
     outline: none;
     border: none;
     width: 100%;
     margin: 0;
     padding: 0;
+
 }
 
 
@@ -412,6 +432,18 @@ element-carousel .icon-box {
     content: "a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a ";
 }
 
+
+.eureka {
+    width: calc(100% + 2 * var(--gap));
+    margin: 2em 0;
+    margin-left: calc(-1 * var(--gap));
+    background-color: var(--eureka-green);
+    padding: 1em 0;
+    color: white;
+}
+.eureka img {
+    filter: invert(1);
+}
 
 
 footer {
