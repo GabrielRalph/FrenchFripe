@@ -5,18 +5,18 @@ export const Data = [
             {
                 img: "./images/products/leather-jacket.jpg",
                 name: "Leather Jackets",
-                text: "LEATHER JACKETS"
+                text: "LEATHER JACKET"
             },
             {
                 img: "./images/products/knit-sweatshirt.jpg",
                 name: "knitted sweatshirts",
-                text: "KNIT SWEATSHIRT"
+                text: "KNIT SWEATER"
             },
 
             {
                 img: "./images/products/jeans.jpg",
                 name: "Denim Levis Jeans",
-                text: "JEANS"
+                text: "DENIM JEANS"
             },
             {
                 img: "./images/products/trackjacket-brand.jpg",
@@ -41,24 +41,24 @@ export const Data = [
             {
                 img: "./images/products/dresses.jpg",
                 name: "dresses",
-                text: "DRESSES"
+                text: "DRESS"
             },
 
             {
                 img: "./images/products/denim-skirts.jpg",
                 name: "Denim Skirts",
-                text: "DENIM SKIRTS"
+                text: "DENIM SKIRT"
             },
             {
                 img: "./images/products/t-shirts.jpg",
                 name: "printed T-Shirts",
-                text: "T-SHIRTS"
+                text: "T-SHIRT"
             },
 
             {
                 img: "./images/products/blouse.jpg",
                 name: "vintage check button up shirt",
-                text: "BLOUSES"
+                text: "BLOUSE"
             },
             {
                 img: "./images/products/workwear.jpg",
